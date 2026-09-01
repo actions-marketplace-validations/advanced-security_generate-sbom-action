@@ -2,8 +2,7 @@
 name: Security and Quality Alert Fixer
 description: Triage open security and quality alerts and create a pull request with fixes.
 on:
-  schedule:
-    - cron: "0 9 * * 5"
+  schedule: weekly on friday around 09:00
   workflow_dispatch:
 permissions:
   actions: read
@@ -11,6 +10,8 @@ permissions:
   issues: read
   pull-requests: read
   security-events: read
+  vulnerability-alerts: read
+  copilot-requests: write
 tools:
   github:
     mode: gh-proxy
@@ -19,10 +20,10 @@ tools:
   edit:
 network:
   allowed: [defaults, github, node]
-features:
-  copilot-requests: true
 safe-outputs:
   create-pull-request:
+    max: 1
+    expires: 7d
     title-prefix: "[agentic] "
     branch-prefix: "agentic/security-quality-alert-fixer/"
     labels: [security, quality, automated]
@@ -70,7 +71,7 @@ Triage all open Security and Quality alerts in `${{ github.repository }}` and cr
 5. Create a pull request with the `create-pull-request` safe output:
    - Use a clear title that summarizes the alert classes fixed.
    - Include a checklist of alerts addressed, validation commands run, and any alerts that could not be fixed.
-   - Keep the pull request as a draft if any alert remains unresolved or validation could not complete.
+   - Set `draft` to `true`; this workflow always creates draft pull requests.
 
 ## Security
 
